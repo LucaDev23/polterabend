@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polterabend 🥂</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --dark: #0D0D0D;
+    --dark2: #161616;
+    --dark3: #1E1E1E;
+    --dark4: #252525;
+    --text: #F0EDE8;
+    --text-muted: #888;
+    --green: #4CAF7D;
+    --red: #E05A5A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--dark2);
+    border-bottom: 1px solid #2a2a2a;
+    padding: 24px 20px 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* LIVE INDICATOR */
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(76, 175, 125, 0.1);
+    border: 1px solid rgba(76, 175, 125, 0.3);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 10px;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* MAIN CONTAINER */
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* LEVEL CARD */
+  .level-card {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .level-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+  .level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .level-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .level-badge {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--dark);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .level-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .level-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .progress-bar {
+    background: var(--dark4);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 10px;
+    transition: width 1s ease;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* TACHO CARD */
+  .tacho-card {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .tacho-wrap {
+    position: relative;
+    width: 160px;
+    height: 90px;
+    margin: 0 auto 12px;
+  }
+  .tacho-svg {
+    width: 100%;
+    height: 100%;
+  }
+  .tacho-value {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .tacho-unit {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .tacho-label-text {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* LOCATION CARD */
+  .location-card {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .location-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .location-icon {
+    width: 36px; height: 36px;
+    background: rgba(201, 169, 110, 0.1);
+    border: 1px solid rgba(201, 169, 110, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .location-title-wrap h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .location-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+  .location-text {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .maps-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(201, 169, 110, 0.08);
+    border: 1px solid rgba(201, 169, 110, 0.25);
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  .maps-btn:hover { background: rgba(201, 169, 110, 0.15); }
+  .location-empty {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  /* TASKS SECTION */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .task-count {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .task-item {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: border-color 0.3s;
+  }
+  .task-item.done {
+    border-color: rgba(76, 175, 125, 0.2);
+    background: rgba(76, 175, 125, 0.03);
+  }
+  .task-checkbox {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: all 0.3s;
+  }
+  .task-item.done .task-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .check-icon {
+    display: none;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .task-item.done .check-icon { display: block; }
+  .task-info { flex: 1; }
+  .task-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    transition: color 0.3s;
+  }
+  .task-item.done .task-name {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(136,136,136,0.5);
+  }
+  .task-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .task-points {
+    font-size: 11px;
+    color: var(--gold);
+    background: rgba(201, 169, 110, 0.1);
+    border-radius: 6px;
+    padding: 2px 7px;
+  }
+  .task-done-time {
+    font-size: 11px;
+    color: var(--green);
+  }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .spinner {
+    width: 30px; height: 30px;
+    border: 2px solid #333;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CONFIG NOTICE */
+  .config-notice {
+    background: rgba(201, 169, 110, 0.08);
+    border: 1px solid rgba(201, 169, 110, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 13px;
+    color: var(--gold-light);
+    line-height: 1.6;
+    display: none;
+  }
+  .config-notice.show { display: block; }
+  .config-notice code {
+    background: rgba(0,0,0,0.3);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Polterabend 2025</div>
+  <h1 id="groomName">Markus' Polter-Mission</h1>
+  <div class="header-sub" id="eventDate">Das Abenteuer beginnt</div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    Live Updates
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- CONFIG NOTICE -->
+  <div class="config-notice" id="configNotice">
+    ⚙️ <strong>Firebase noch nicht konfiguriert.</strong><br>
+    Öffne diese Datei und ersetze die Firebase-Config am Ende des Scripts mit deinen eigenen Werten.<br>
+    Anleitung: <code>firebaseConfig</code> Block anpassen → fertig!
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loadingState">
+    <div class="spinner"></div>
+    Lade Live-Daten...
+  </div>
+
+  <!-- LEVEL CARD -->
+  <div class="level-card" id="levelCard" style="display:none">
+    <div class="level-header">
+      <div class="level-title">🏆 Aktuelles Level</div>
+      <div class="level-badge" id="levelBadge">LVL 1</div>
+    </div>
+    <div class="level-name" id="levelName">Nüchterner Anfänger</div>
+    <div class="level-desc" id="levelDesc">Der Weg zum Ruhm beginnt...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progressDone">0 erledigt</span>
+      <span id="progressTotal">0 Aufgaben</span>
+    </div>
+  </div>
+
+  <!-- TACHO CARD -->
+  <div class="tacho-card" id="tachoCard" style="display:none">
+    <div class="card-label">🍺 Promille-Tacho</div>
+    <div class="tacho-wrap">
+      <svg class="tacho-svg" viewBox="0 0 160 90">
+        <!-- Background arc -->
+        <path d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#2a2a2a" stroke-width="10" stroke-linecap="round"/>
+        <!-- Color arc -->
+        <path id="tachoArc" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="url(#tachoGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 188"/>
+        <defs>
+          <linearGradient id="tachoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#4CAF7D"/>
+            <stop offset="50%" stop-color="#C9A96E"/>
+            <stop offset="100%" stop-color="#E05A5A"/>
+          </linearGradient>
+        </defs>
+        <!-- Needle -->
+        <line id="tachoNeedle" x1="80" y1="80" x2="80" y2="28" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" transform="rotate(-90, 80, 80)"/>
+        <circle cx="80" cy="80" r="4" fill="var(--gold)"/>
+        <!-- Labels -->
+        <text x="16" y="85" font-size="8" fill="#666" text-anchor="middle">0.0</text>
+        <text x="80" y="16" font-size="8" fill="#666" text-anchor="middle">1.5</text>
+        <text x="144" y="85" font-size="8" fill="#666" text-anchor="middle">3.0</text>
+      </svg>
+      <div class="tacho-value" id="tachoValue">0.0</div>
+    </div>
+    <div class="tacho-unit">Promille</div>
+    <div class="tacho-label-text" id="tachoLabel" style="margin-top:8px; font-size:13px">Noch nüchtern 😇</div>
+  </div>
+
+  <!-- LOCATION CARD -->
+  <div class="location-card" id="locationCard" style="display:none">
+    <div class="location-header">
+      <div class="location-icon">📍</div>
+      <div class="location-title-wrap">
+        <h3>Aktueller Standort</h3>
+        <div class="location-time" id="locationTime">Kein Update</div>
+      </div>
+    </div>
+    <div class="location-text" id="locationText">
+      <span class="location-empty">Noch kein Standort gesetzt.</span>
+    </div>
+    <a href="#" class="maps-btn" id="mapsBtn" target="_blank" style="display:none">
+      📍 In Google Maps öffnen
+    </a>
+  </div>
+
+  <!-- TASKS -->
+  <div id="tasksSection" style="display:none">
+    <div class="section-header">
+      <div class="section-title">Aufgaben</div>
+      <div class="task-count" id="taskCountLabel">0/0</div>
+    </div>
+    <div id="taskList"></div>
+  </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, doc, onSnapshot, collection } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  // ======================================================
+  // 🔧 FIREBASE CONFIG – hier deine Werte eintragen!
+  // ======================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyCe7rnFtDIEky4T3dJm01yVM24wz5by9zI",
+    authDomain: "polterabend-mrt.firebaseapp.com",
+    projectId: "polterabend-mrt",
+    storageBucket: "polterabend-mrt.firebasestorage.app",
+    messagingSenderId: "895557787854",
+    appId: "1:895557787854:web:0739bf5ab761c435b8f09f"
+  };
+  // ======================================================
+
+  const isConfigured = firebaseConfig.apiKey !== "DEIN_API_KEY";
+
+  if (!isConfigured) {
+    document.getElementById('configNotice').classList.add('show');
+    document.getElementById('loadingState').style.display = 'none';
+    // Show with dummy data
+    showDummyData();
+    return;
+  }
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function hideLoading() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('levelCard').style.display = 'block';
+    document.getElementById('tachoCard').style.display = 'block';
+    document.getElementById('locationCard').style.display = 'block';
+    document.getElementById('tasksSection').style.display = 'block';
+  }
+
+  // Listen: State (level, tacho, location)
+  onSnapshot(doc(db, 'polter', 'state'), (snap) => {
+    const data = snap.data() || {};
+    hideLoading();
+    updateLevel(data.completedCount || 0, data.totalCount || 10);
+    updateTacho(data.alcoholLevel || 0);
+    updateLocation(data.location || '', data.locationTime || null);
+  });
+
+  // Listen: Tasks
+  onSnapshot(collection(db, 'polter', 'data', 'tasks'), (snap) => {
+    const tasks = [];
+    snap.forEach(d => tasks.push({ id: d.id, ...d.data() }));
+    tasks.sort((a, b) => (a.order || 0) - (b.order || 0));
+    renderTasks(tasks);
+  });
+
+  function showDummyData() {
+    document.getElementById('levelCard').style.display = 'block';
+    document.getElementById('tachoCard').style.display = 'block';
+    document.getElementById('locationCard').style.display = 'block';
+    document.getElementById('tasksSection').style.display = 'block';
+    updateLevel(3, 10);
+    updateTacho(0.8);
+    updateLocation('Musterbar, Musterstraße 1, 12345 Musterstadt', new Date());
+    renderTasks([
+      { id: '1', name: 'Aufgabe 1: Platzhalter', desc: 'Beschreibung der ersten Aufgabe', points: 100, done: true, doneAt: new Date().toISOString(), order: 1 },
+      { id: '2', name: 'Aufgabe 2: Platzhalter', desc: 'Beschreibung der zweiten Aufgabe', points: 200, done: false, order: 2 },
+      { id: '3', name: 'Aufgabe 3: Platzhalter', desc: 'Beschreibung der dritten Aufgabe', points: 150, done: false, order: 3 },
+    ]);
+  }
+
+  function updateLevel(done, total) {
+    const levels = [
+      { name: 'Nüchterner Anfänger', desc: 'Der Weg zum Ruhm beginnt...', min: 0 },
+      { name: 'Abenteurer', desc: 'Erste Siege eingesammelt!', min: 2 },
+      { name: 'Polter-Veteran', desc: 'Halbzeit – Respekt!', min: 4 },
+      { name: 'Chaos-Meister', desc: 'Fast am Ziel, du Legende!', min: 7 },
+      { name: 'Polter-Legende', desc: '🎉 Alle Aufgaben geschafft!', min: 10 },
+    ];
+    let lvl = levels[0];
+    let lvlIdx = 0;
+    for (let i = 0; i < levels.length; i++) {
+      if (done >= levels[i].min) { lvl = levels[i]; lvlIdx = i; }
+    }
+    document.getElementById('levelBadge').textContent = `LVL ${lvlIdx + 1}`;
+    document.getElementById('levelName').textContent = lvl.name;
+    document.getElementById('levelDesc').textContent = lvl.desc;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressDone').textContent = `${done} erledigt`;
+    document.getElementById('progressTotal').textContent = `${total} Aufgaben`;
+    document.getElementById('taskCountLabel').textContent = `${done}/${total}`;
+  }
+
+  function updateTacho(level) {
+    const MAX = 3.0;
+    const pct = Math.min(level / MAX, 1);
+    const arcLen = 188;
+    document.getElementById('tachoArc').setAttribute('stroke-dasharray', `${pct * arcLen} ${arcLen}`);
+    const angle = -90 + pct * 180;
+    document.getElementById('tachoNeedle').setAttribute('transform', `rotate(${angle}, 80, 80)`);
+    document.getElementById('tachoValue').textContent = level.toFixed(1);
+    const labels = ['Noch nüchtern 😇', 'Leicht angetütet 😄', 'Gut drauf 🎉', 'Richtig dabei 🥴', 'Vollgas! 🍺', 'Legendenstatus 👑'];
+    const idx = Math.min(Math.floor(level / 0.5), labels.length - 1);
+    document.getElementById('tachoLabel').textContent = labels[idx];
+  }
+
+  function updateLocation(loc, time) {
+    const textEl = document.getElementById('locationText');
+    const mapsBtn = document.getElementById('mapsBtn');
+    const timeEl = document.getElementById('locationTime');
+    if (loc) {
+      textEl.textContent = loc;
+      mapsBtn.style.display = 'flex';
+      mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
+      if (time) {
+        const d = time.toDate ? time.toDate() : new Date(time);
+        timeEl.textContent = 'Zuletzt: ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
+      }
+    } else {
+      textEl.innerHTML = '<span class="location-empty">Noch kein Standort gesetzt.</span>';
+      mapsBtn.style.display = 'none';
+      timeEl.textContent = 'Kein Update';
+    }
+  }
+
+  function renderTasks(tasks) {
+    const list = document.getElementById('taskList');
+    list.innerHTML = '';
+    const done = tasks.filter(t => t.done).length;
+    updateLevel(done, tasks.length);
+    tasks.forEach(task => {
+      const div = document.createElement('div');
+      div.className = `task-item${task.done ? ' done' : ''}`;
+      let doneTimeHtml = '';
+      if (task.done && task.doneAt) {
+        const d = new Date(task.doneAt);
+        doneTimeHtml = `<span class="task-done-time">✓ ${d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</span>`;
+      }
+      div.innerHTML = `
+        <div class="task-checkbox"><span class="check-icon">✓</span></div>
+        <div class="task-info">
+          <div class="task-name">${task.name}</div>
+          ${task.desc ? `<div class="task-desc">${task.desc}</div>` : ''}
+          <div class="task-meta">
+            ${task.points ? `<span class="task-points">+${task.points} Punkte</span>` : ''}
+            ${doneTimeHtml}
+          </div>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+</script>
+</body>
+</html>
