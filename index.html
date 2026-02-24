@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tobi's Polterweekend 🍺</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Barlow+Condensed:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#1A1200;--bg2:#221900;--bg3:#2A2000;--bg4:#332800;
+  --accent:#D4960A;--accent2:#F2BC3B;--accent-glow:rgba(212,150,10,0.3);
+  --text:#F5E8C0;--text-muted:#8A7A50;--border:#3A2E10;
+  --done:#6BAE4A;
+}
+body.theme-rose{--bg:#1A0A10;--bg2:#220D15;--bg3:#2A1020;--bg4:#33152A;--accent:#D4607A;--accent2:#F09BB0;--accent-glow:rgba(212,96,122,0.3);--text:#F5D0DC;--text-muted:#8A5A68;--border:#3A1525;--done:#C06090;}
+body.theme-negroni{--bg:#0A0A0F;--bg2:#0F0F18;--bg3:#14141F;--bg4:#1A1A28;--accent:#C8732A;--accent2:#E8A060;--accent-glow:rgba(200,115,42,0.3);--text:#EDE0D0;--text-muted:#706050;--border:#2A2018;--done:#8AB060;}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh;padding-bottom:50px;transition:background 1.2s,color 0.8s;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.7;}
+
+/* HEADER */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:18px 20px 14px;text-align:center;position:sticky;top:0;z-index:100;}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.hdr-eye{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--text);}
+.hdr h1 em{color:var(--accent2);font-style:normal;}
+.hdr-sub{font-size:12px;color:var(--text-muted);margin-top:3px;letter-spacing:.5px;}
+.live-b{display:inline-flex;align-items:center;gap:5px;background:rgba(107,174,74,.1);border:1px solid rgba(107,174,74,.25);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--done);margin-top:8px;letter-spacing:1px;}
+.live-dot{width:5px;height:5px;background:var(--done);border-radius:50%;animation:lpulse 2s infinite;}
+@keyframes lpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* CONTAINER */
+.wrap{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;transition:background 1.2s,border-color 1.2s;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+
+/* LEVEL HERO */
+.lv-hero{padding:22px 18px 18px;text-align:center;}
+.lv-eye{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.lv-big{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;font-style:italic;line-height:1.1;margin-bottom:4px;}
+.lv-big em{color:var(--accent2);font-style:italic;}
+.lv-tag{font-size:14px;color:var(--text-muted);margin-bottom:16px;font-style:italic;font-family:'Cormorant Garamond',serif;}
+
+/* Ring */
+.ring-wrap{position:relative;width:110px;height:110px;margin:0 auto 12px;}
+.ring-wrap svg{transform:rotate(-90deg);width:110px;height:110px;}
+.ring-bg{fill:none;stroke:var(--bg4);stroke-width:7;}
+.ring-fg{fill:none;stroke:url(#rg);stroke-width:7;stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.2s ease;}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--accent2);line-height:1;}
+.ring-lbl{font-size:9px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.lv-prog{font-size:13px;color:var(--text-muted);}
+.lv-prog strong{color:var(--accent2);}
+
+/* TIMER */
+.timer-c{text-align:center;}
+.timer-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+.timer-row{display:flex;justify-content:center;gap:5px;margin-bottom:10px;}
+.t-block{display:flex;flex-direction:column;align-items:center;background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:58px;}
+.t-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--accent2);line-height:1;}
+.t-unit{font-size:9px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+.t-div{font-family:'Playfair Display',serif;font-size:24px;color:var(--accent);align-self:flex-start;padding-top:8px;opacity:.5;}
+.t-dead{font-size:11px;color:var(--text-muted);font-style:italic;font-family:'Cormorant Garamond',serif;}
+.t-expired{font-family:'Playfair Display',serif;font-size:17px;color:var(--accent);font-style:italic;padding:8px 0;}
+
+/* DRINK STATUS */
+.ds-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.ds-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ds-title{font-size:15px;font-weight:600;}
+.ds-sub{font-size:11px;color:var(--text-muted);}
+.db-track{height:22px;border-radius:11px;background:var(--bg4);border:1px solid var(--border);position:relative;overflow:hidden;margin-bottom:6px;}
+.db-fill{position:absolute;top:0;bottom:0;left:0;border-radius:11px;transition:width .8s ease;background:linear-gradient(90deg,#4CAF7D 0%,#D4960A 50%,#E05A5A 100%);opacity:.25;}
+.db-needle{position:absolute;top:-3px;bottom:-3px;width:4px;background:white;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.7);transition:left .8s ease;transform:translateX(-50%);}
+.db-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);}
+.ds-badge{display:flex;align-items:center;gap:8px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-top:10px;}
+.ds-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ds-txt{font-size:14px;font-weight:600;letter-spacing:.3px;}
+
+/* LOCATION */
+.loc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.loc-ico{width:36px;height:36px;border-radius:10px;background:rgba(212,150,10,.1);border:1px solid rgba(212,150,10,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.loc-ttl{font-size:13px;font-weight:600;}
+.loc-time{font-size:11px;color:var(--text-muted);}
+.loc-txt{font-size:14px;line-height:1.4;margin-bottom:10px;}
+.loc-empty{font-size:13px;color:var(--text-muted);font-style:italic;}
+.maps-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(212,150,10,.08);border:1px solid rgba(212,150,10,.25);border-radius:10px;padding:11px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:background .2s;}
+.maps-btn:hover{background:rgba(212,150,10,.15);}
+
+/* RULES */
+.rules-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.rules-ico{font-size:22px;}
+.rules-ttl{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.rule{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5;}
+.rule:last-child{border:none;}
+.rule-n{font-family:'Playfair Display',serif;color:var(--accent);font-weight:700;min-width:18px;flex-shrink:0;}
+
+/* SECTION HEAD */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;}
+.sec-ttl{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;font-style:italic;}
+.sec-cnt{font-size:12px;color:var(--text-muted);}
+
+/* TASKS */
+.task{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 14px 14px 18px;margin-bottom:9px;display:flex;gap:12px;align-items:flex-start;transition:border-color .4s,background .4s;position:relative;overflow:hidden;}
+.task::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .4s;}
+.task.done::before{background:var(--done);}
+.task.done{border-color:rgba(107,174,74,.15);background:rgba(107,174,74,.03);}
+.task-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .3s;font-size:12px;font-weight:700;color:white;}
+.task.done .task-chk{background:var(--done);border-color:var(--done);}
+.task-body{flex:1;}
+.task-name{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:3px;}
+.task.done .task-name{color:var(--text-muted);text-decoration:line-through;text-decoration-color:rgba(138,122,80,.4);}
+.task-desc{font-size:12px;color:var(--text-muted);margin-top:2px;font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.4;}
+.task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;}
+.task-pts{font-size:11px;color:var(--accent);background:rgba(212,150,10,.1);border:1px solid rgba(212,150,10,.15);border-radius:6px;padding:2px 7px;}
+.task-done-info{font-size:11px;color:var(--done);}
+
+/* LOCKED */
+.locked{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center;opacity:.4;margin-bottom:9px;}
+.locked-ico{font-size:28px;margin-bottom:8px;}
+.locked-ttl{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;margin-bottom:4px;}
+.locked-txt{font-size:12px;color:var(--text-muted);font-style:italic;font-family:'Cormorant Garamond',serif;}
+
+/* LOADING */
+.loading{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* OVERLAY */
+.t-overlay{position:fixed;inset:0;background:var(--bg);z-index:1000;opacity:0;pointer-events:none;transition:opacity .5s;}
+.t-overlay.on{opacity:1;pointer-events:all;}
+</style>
+</head>
+<body>
+
+<div class="t-overlay" id="tOverlay"></div>
+
+<div class="hdr">
+  <div class="hdr-eye">Polterweekend 07.03. – 08.03.2026</div>
+  <h1>Tobi's <em>Polterweekend</em></h1>
+  <div class="hdr-sub">Das Abenteuer läuft &nbsp;·&nbsp; <span id="hdrStatus">Lädt...</span></div>
+  <div class="live-b"><div class="live-dot"></div>LIVE</div>
+</div>
+
+<div id="loadWrap" class="wrap">
+  <div class="loading"><div class="spinner"></div>Lade Live-Daten...</div>
+</div>
+
+<div id="appWrap" class="wrap" style="display:none">
+
+  <!-- LEVEL HERO -->
+  <div class="card lv-hero">
+    <div class="lv-eye" id="lvEye">LEVEL 1 · BEER-SCHWIMMER</div>
+    <div class="lv-big" id="lvBig">Beer-<em>Schwimmer</em></div>
+    <div class="lv-tag" id="lvTag">Schwimm oder geh unter...</div>
+    <div class="ring-wrap">
+      <svg viewBox="0 0 110 110">
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--accent)"/>
+            <stop offset="100%" stop-color="var(--accent2)"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="55" cy="55" r="50"/>
+        <circle class="ring-fg" id="ringFg" cx="55" cy="55" r="50"/>
+      </svg>
+      <div class="ring-inner">
+        <div class="ring-pct" id="ringPct">0%</div>
+        <div class="ring-lbl">Erledigt</div>
+      </div>
+    </div>
+    <div class="lv-prog" id="lvProg"><strong>0</strong> von <strong>0</strong> Aufgaben</div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="card timer-c" id="timerCard">
+    <div class="timer-lbl">⏱ VERBLEIBENDE ZEIT</div>
+    <div class="timer-row">
+      <div class="t-block"><div class="t-num" id="tH">00</div><div class="t-unit">Std</div></div>
+      <div class="t-div">:</div>
+      <div class="t-block"><div class="t-num" id="tM">00</div><div class="t-unit">Min</div></div>
+      <div class="t-div">:</div>
+      <div class="t-block"><div class="t-num" id="tS">00</div><div class="t-unit">Sek</div></div>
+    </div>
+    <div class="t-dead" id="tDead"></div>
+  </div>
+
+  <!-- DRINK STATUS -->
+  <div class="card">
+    <div class="ds-hdr">
+      <div class="ds-av">🍻</div>
+      <div><div class="ds-title">Tobi's Trinkstatus</div><div class="ds-sub">Live von den Admins aktualisiert</div></div>
+    </div>
+    <div class="db-track">
+      <div class="db-fill" id="dbFill" style="width:100%"></div>
+      <div class="db-needle" id="dbNeedle" style="left:50%"></div>
+    </div>
+    <div class="db-labels"><span>🟢 Nachschub!</span><span>✅ Perfekt</span><span>🔴 Pause!</span></div>
+    <div class="ds-badge">
+      <div class="ds-dot" id="dsDot"></div>
+      <div class="ds-txt" id="dsTxt">Lädt...</div>
+    </div>
+  </div>
+
+  <!-- LOCATION -->
+  <div class="card">
+    <div class="loc-row">
+      <div class="loc-ico">📍</div>
+      <div><div class="loc-ttl">Aktueller Standort</div><div class="loc-time" id="locTime">Kein Update</div></div>
+    </div>
+    <div class="loc-txt" id="locTxt"><span class="loc-empty">Noch kein Standort gesetzt.</span></div>
+    <a href="#" class="maps-btn" id="mapsBtn" target="_blank" style="display:none">📍 In Google Maps öffnen</a>
+  </div>
+
+  <!-- RULES -->
+  <div class="card">
+    <div class="rules-hdr"><div class="rules-ico">📜</div><div class="rules-ttl">Die Grundregeln</div></div>
+    <div class="rule"><span class="rule-n">I</span><span>Du musst dir deine Getränke erspielen! Ohne Erfolg gibt's keinen Drink!</span></div>
+    <div class="rule"><span class="rule-n">II</span><span>Mind. 3 Aufgaben pro Level abschliessen, um das nächste Level zu beginnen.</span></div>
+    <div class="rule"><span class="rule-n">III</span><span>Wenn ein Level abgeschlossen ist, darfst du das jeweilige Getränk frei konsumieren – vorher nur die erspielten Getränke.</span></div>
+    <div class="rule"><span class="rule-n">IV</span><span>80% aller Aufgaben müssen gelöst werden, um den Titel <em>«Negroni-Daddy»</em> zu erlangen.</span></div>
+    <div class="rule"><span class="rule-n">V</span><span>Pro ausgelassener Aufgabe musst du eine Person einladen – du selbst darfst nicht mittrinken!</span></div>
+    <div class="rule"><span class="rule-n">VI</span><span>Spontan-Aufgaben können jederzeit ausgerufen werden und vorhandene Challenges streichen lassen.</span></div>
+    <div class="rule"><span class="rule-n">VII</span><span>Du bekommst ein Buch und eine Polaroid-Kamera – setze diese weise ein!</span></div>
+  </div>
+
+  <!-- LEVEL 1 -->
+  <div class="sec-hd"><div class="sec-ttl">🍺 Beer-Schwimmer</div><div class="sec-cnt" id="cnt1">–</div></div>
+  <div id="list1"></div>
+
+  <!-- LEVEL 2 -->
+  <div id="sec2">
+    <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🥂 Rosé-Prinz</div><div class="sec-cnt" id="cnt2">–</div></div>
+    <div id="list2"></div>
+  </div>
+
+  <!-- LEVEL 3 -->
+  <div id="sec3">
+    <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🍊 Negroni-Daddy</div><div class="sec-cnt" id="cnt3">–</div></div>
+    <div id="list3"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, onSnapshot, collection } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const cfg = {
+  apiKey:"AIzaSyCe7rnFtDIEky4T3dJm01yVM24wz5by9zI",
+  authDomain:"polterabend-mrt.firebaseapp.com",
+  projectId:"polterabend-mrt",
+  storageBucket:"polterabend-mrt.firebasestorage.app",
+  messagingSenderId:"895557787854",
+  appId:"1:895557787854:web:0739bf5ab761c435b8f09f"
+};
+
+const app = initializeApp(cfg, 'guest');
+const db = getFirestore(app);
+
+let tasks = [], state = {}, timerIv = null, curTheme = '';
+
+const LVL = [
+  { id:'l1', nameHtml:'Beer-<em>Schwimmer</em>', eye:'LEVEL 1 · BEER-SCHWIMMER', tag:'Schwimm oder geh unter...', theme:'', deadline:new Date('2026-03-07T13:00:00'), dlLabel:'07.03.2026 bis 13:00 Uhr' },
+  { id:'l2', nameHtml:'Rosé-<em>Prinz</em>',      eye:'LEVEL 2 · ROSÉ-PRINZ',     tag:'Eleganz ist keine Schwäche.', theme:'rose', deadline:new Date('2026-03-07T19:00:00'), dlLabel:'07.03.2026 bis 19:00 Uhr' },
+  { id:'l3', nameHtml:'Negroni-<em>Daddy</em>',   eye:'LEVEL 3 · NEGRONI-DADDY',  tag:'Die Legende schreibt ihr letztes Kapitel.', theme:'negroni', deadline:new Date('2026-03-07T23:59:00'), dlLabel:'07.03.2026 bis 23:59 Uhr' },
+];
+
+// LISTENERS
+onSnapshot(doc(db,'polter','state'), snap => {
+  state = snap.data() || {};
+  show();
+  drinkStatus(state.drinkLevel ?? 50);
+  locUpdate(state.location||'', state.locationTime);
+  renderAll();
+});
+
+onSnapshot(collection(db,'polter','data','tasks'), snap => {
+  tasks = [];
+  snap.forEach(d => tasks.push({id:d.id,...d.data()}));
+  tasks.sort((a,b)=>(a.order||0)-(b.order||0));
+  renderAll();
+});
+
+function show() {
+  document.getElementById('loadWrap').style.display='none';
+  document.getElementById('appWrap').style.display='flex';
+}
+
+function renderAll() {
+  const t1 = tasks.filter(t=>t.level==='l1');
+  const t2 = tasks.filter(t=>t.level==='l2');
+  const t3 = tasks.filter(t=>t.level==='l3');
+  const d1=t1.filter(t=>t.done).length, d2=t2.filter(t=>t.done).length, d3=t3.filter(t=>t.done).length;
+
+  const l2open = d1>=3;
+  const l3open = l2open && d2>=3;
+
+  // Current level
+  let lv=LVL[0], lvTasks=t1, lvDone=d1;
+  if(l3open){ lv=LVL[2];lvTasks=t3;lvDone=d3; }
+  else if(l2open){ lv=LVL[1];lvTasks=t2;lvDone=d2; }
+
+  // Theme
+  setTheme(lv.theme);
+
+  // Hero
+  document.getElementById('lvEye').textContent=lv.eye;
+  document.getElementById('lvBig').innerHTML=lv.nameHtml;
+  document.getElementById('lvTag').textContent=lv.tag;
+  document.getElementById('hdrStatus').textContent=lv.nameHtml.replace(/<[^>]+>/g,'');
+
+  const tot=lvTasks.length, pct=tot?Math.round(lvDone/tot*100):0;
+  document.getElementById('ringPct').textContent=pct+'%';
+  const circ=314; // 2*pi*50
+  document.getElementById('ringFg').style.strokeDashoffset=circ-(pct/100*circ);
+  document.getElementById('lvProg').innerHTML=`<strong>${lvDone}</strong> von <strong>${tot}</strong> Aufgaben erledigt`;
+
+  // Timer
+  setTimer(lv);
+
+  // Tasks
+  renderList('list1','cnt1',t1);
+
+  if(l2open){
+    document.getElementById('sec2').style.display='block';
+    document.getElementById('sec2').innerHTML=`
+      <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🥂 Rosé-Prinz</div><div class="sec-cnt" id="cnt2">${d2}/${t2.length}</div></div>
+      <div id="list2"></div>`;
+    renderList('list2',null,t2);
+  } else {
+    document.getElementById('sec2').innerHTML=`
+      <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🥂 Rosé-Prinz</div></div>
+      <div class="locked"><div class="locked-ico">🔒</div><div class="locked-ttl">Rosé-Prinz</div><div class="locked-txt">Noch ${3-d1} Aufgabe${3-d1!==1?'n':''} im Beer-Schwimmer-Level erforderlich</div></div>`;
+  }
+
+  if(l3open){
+    document.getElementById('sec3').style.display='block';
+    document.getElementById('sec3').innerHTML=`
+      <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🍊 Negroni-Daddy</div><div class="sec-cnt" id="cnt3">${d3}/${t3.length}</div></div>
+      <div id="list3"></div>`;
+    renderList('list3',null,t3);
+  } else {
+    document.getElementById('sec3').innerHTML=`
+      <div class="sec-hd" style="margin-top:6px"><div class="sec-ttl">🍊 Negroni-Daddy</div></div>
+      <div class="locked"><div class="locked-ico">🔒</div><div class="locked-ttl">Negroni-Daddy</div><div class="locked-txt">Erst nach 3 erledigten Rosé-Prinz-Aufgaben sichtbar</div></div>`;
+  }
+}
+
+function renderList(id, cntId, arr) {
+  const el=document.getElementById(id); if(!el)return;
+  const done=arr.filter(t=>t.done).length;
+  if(cntId && document.getElementById(cntId)) document.getElementById(cntId).textContent=`${done}/${arr.length}`;
+  el.innerHTML='';
+  arr.forEach(t=>{
+    const div=document.createElement('div');
+    div.className='task'+(t.done?' done':'');
+    let doneInfo='';
+    if(t.done){
+      const ts=t.doneAt?new Date(t.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';
+      const by=t.doneBy?` · ${t.doneBy}`:'';
+      doneInfo=`<span class="task-done-info">✓ ${ts} Uhr${by}</span>`;
+    }
+    div.innerHTML=`
+      <div class="task-chk">${t.done?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-name">${t.name}</div>
+        ${t.desc?`<div class="task-desc">${t.desc}</div>`:''}
+        <div class="task-meta">
+          ${t.points?`<span class="task-pts">+${t.points} Punkte</span>`:''}
+          ${doneInfo}
+        </div>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+function setTimer(lv) {
+  if(timerIv) clearInterval(timerIv);
+  const card=document.getElementById('timerCard');
+  document.getElementById('tDead').textContent='Deadline: '+lv.dlLabel;
+
+  function tick(){
+    const diff=lv.deadline-new Date();
+    if(diff<=0){
+      card.innerHTML=`<div class="t-expired">⏰ Level-Zeit abgelaufen – gut gemacht!</div>`;
+      clearInterval(timerIv); return;
+    }
+    const h=Math.floor(diff/3600000), m=Math.floor(diff%3600000/60000), s=Math.floor(diff%60000/1000);
+    document.getElementById('tH').textContent=String(h).padStart(2,'0');
+    document.getElementById('tM').textContent=String(m).padStart(2,'0');
+    document.getElementById('tS').textContent=String(s).padStart(2,'0');
+  }
+  tick(); timerIv=setInterval(tick,1000);
+}
+
+function drinkStatus(v) {
+  const pct=Math.max(0,Math.min(100,v));
+  document.getElementById('dbNeedle').style.left=pct+'%';
+  let color,text;
+  if(pct<35){color='#4CAF7D';text='🟢 Tobi braucht Nachschub!';}
+  else if(pct<=65){color='#D4960A';text='✅ Alles im grünen Bereich';}
+  else{color='#E05A5A';text='🔴 Tobi sollte eine Pause machen!';}
+  document.getElementById('dsDot').style.background=color;
+  document.getElementById('dsTxt').textContent=text;
+  document.getElementById('dsTxt').style.color=color;
+}
+
+function locUpdate(loc,time){
+  const el=document.getElementById('locTxt'), btn=document.getElementById('mapsBtn'), te=document.getElementById('locTime');
+  if(loc){
+    el.textContent=loc; btn.style.display='flex';
+    btn.href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
+    if(time){const d=time.toDate?time.toDate():new Date(time);te.textContent='Zuletzt: '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';}
+  } else {
+    el.innerHTML='<span class="loc-empty">Noch kein Standort gesetzt.</span>';
+    btn.style.display='none'; te.textContent='Kein Update';
+  }
+}
+
+function setTheme(theme){
+  if(curTheme===theme)return;
+  const ov=document.getElementById('tOverlay');
+  ov.classList.add('on');
+  setTimeout(()=>{
+    document.body.className=theme?'theme-'+theme:'';
+    curTheme=theme; ov.classList.remove('on');
+  },400);
+}
+</script>
+</body>
+</html>

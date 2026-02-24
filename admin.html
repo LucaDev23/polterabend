@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Admin – Polterweekend</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Barlow+Condensed:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0D0D;--bg2:#161616;--bg3:#1E1E1E;--bg4:#252525;--gold:#C9A96E;--gold2:#E8D5B0;--text:#F0EDE8;--muted:#888;--border:#2a2a2a;--green:#4CAF7D;--red:#E05A5A;--blue:#5A9EE0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh;padding-bottom:60px;}
+
+/* HEADER */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-eye{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.admin-badge{background:rgba(224,90,90,.1);border:1px solid rgba(224,90,90,.3);border-radius:20px;padding:5px 13px;font-size:11px;color:var(--red);font-weight:500;letter-spacing:.5px;}
+
+/* LOGIN */
+.login{max-width:360px;margin:50px auto 0;padding:0 20px;text-align:center;}
+.login-ico{font-size:44px;margin-bottom:14px;}
+.login h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:26px;font-family:'Cormorant Garamond',serif;font-style:italic;}
+.login-btns{display:flex;flex-direction:column;gap:9px;}
+.login-btn{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;cursor:pointer;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:500;display:flex;align-items:center;gap:12px;transition:border-color .2s,background .2s;width:100%;}
+.login-btn:hover{border-color:var(--gold);background:rgba(201,169,110,.05);}
+.login-btn-ico{font-size:22px;}
+.login-btn-name{font-size:15px;}
+.login-btn-role{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* WRAP */
+.wrap{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+
+/* LOGGED AS */
+.logged-row{background:rgba(201,169,110,.05);border:1px solid rgba(201,169,110,.15);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;}
+.logged-row strong{color:var(--gold);}
+.logout-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--muted);cursor:pointer;font-size:11px;font-family:'Barlow Condensed',sans-serif;transition:color .2s,border-color .2s;}
+.logout-btn:hover{color:var(--red);border-color:var(--red);}
+
+/* CARD HEADER */
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ch-ico{width:36px;height:36px;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ch-ttl{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;}
+.ch-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* LEVEL DISPLAY */
+.lv-disp{text-align:center;padding:8px 0 14px;}
+.lv-num{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--gold);line-height:1;}
+.lv-name{font-size:14px;color:var(--muted);margin-top:4px;font-family:'Cormorant Garamond',serif;font-style:italic;}
+.pb{background:var(--bg4);border-radius:10px;height:7px;overflow:hidden;margin:10px 0 6px;}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width .8s ease;}
+.pb-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
+
+/* TASKS */
+.task-item{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid #1f1f1f;}
+.task-item:last-child{border:none;}
+.task-tog{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;color:white;font-size:12px;font-weight:700;}
+.task-tog.done{background:var(--green);border-color:var(--green);}
+.task-tog:hover:not(.done){border-color:var(--green);background:rgba(76,175,125,.1);}
+.task-info{flex:1;}
+.task-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.task-item.done .task-name{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(136,136,136,.4);}
+.task-desc{font-size:12px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.4;}
+.task-pts{font-size:11px;color:var(--gold);margin-top:3px;}
+.task-done-t{font-size:11px;color:var(--green);margin-top:2px;}
+.task-level-badge{font-size:10px;color:var(--muted);background:var(--bg4);border-radius:4px;padding:1px 6px;display:inline-block;margin-top:2px;}
+
+/* DRINK CONTROL */
+.drink-disp{text-align:center;padding:14px 0 8px;}
+.drink-val{font-family:'Playfair Display',serif;font-size:44px;font-weight:700;color:var(--gold);line-height:1;}
+.drink-unit{font-size:12px;color:var(--muted);margin-top:4px;}
+.drink-track{height:22px;border-radius:11px;background:var(--bg4);border:1px solid var(--border);position:relative;overflow:hidden;margin:14px 0 6px;}
+.drink-track-gradient{position:absolute;inset:0;border-radius:11px;background:linear-gradient(90deg,#4CAF7D 0%,#D4960A 50%,#E05A5A 100%);opacity:.3;}
+.drink-needle{position:absolute;top:-3px;bottom:-3px;width:4px;background:white;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,.8);transform:translateX(-50%);transition:left .3s;}
+.drink-lbl-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:14px;}
+input[type="range"]{width:100%;-webkit-appearance:none;height:6px;border-radius:10px;background:linear-gradient(90deg,#4CAF7D,#D4960A,#E05A5A);outline:none;cursor:pointer;margin:4px 0;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:2px solid var(--bg);cursor:pointer;box-shadow:0 0 8px rgba(201,169,110,.4);}
+.range-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px;margin-bottom:14px;}
+.drink-status-preview{display:flex;align-items:center;gap:8px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;}
+.dspdot{width:10px;height:10px;border-radius:50%;}
+.dsptxt{font-size:13px;font-weight:600;}
+
+/* BUTTONS */
+.save-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);border:none;border-radius:12px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;transition:opacity .2s,transform .1s;letter-spacing:.5px;}
+.save-btn:hover{opacity:.9;}
+.save-btn:active{transform:scale(.98);}
+.save-btn:disabled{opacity:.4;cursor:not-allowed;}
+.save-btn.secondary{background:var(--bg4);color:var(--text);border:1px solid var(--border);}
+
+/* LOCATION */
+.loc-control{display:flex;flex-direction:column;gap:10px;}
+.cur-loc{font-size:12px;color:var(--muted);padding:6px 0;line-height:1.4;}
+.cur-loc strong{color:var(--text);}
+.input-row{display:flex;gap:8px;}
+input[type="text"]{flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+input[type="text"]:focus{border-color:var(--gold);}
+input[type="text"]::placeholder{color:var(--muted);}
+.geo-btn{background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--gold);cursor:pointer;font-size:18px;transition:background .2s;white-space:nowrap;}
+.geo-btn:hover{background:rgba(201,169,110,.1);}
+
+/* SECTION DIVIDER */
+.sec-div{display:flex;align-items:center;gap:10px;padding:2px 0;margin-top:4px;}
+.sec-div-line{flex:1;height:1px;background:var(--border);}
+.sec-div-txt{font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:var(--muted);}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;z-index:1000;transition:transform .3s;white-space:nowrap;max-width:90vw;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:rgba(76,175,125,.4);color:var(--green);}
+.toast.err{border-color:rgba(224,90,90,.4);color:var(--red);}
+
+#loginScreen{display:flex;flex-direction:column;}
+#adminApp{display:none;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div><div class="hdr-eye">Admin Panel</div><h1>Polterweekend 🥂</h1></div>
+  <div class="admin-badge">🔐 ADMIN</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login">
+    <div class="login-ico">🎩</div>
+    <h2>Wer bist du?</h2>
+    <p class="login-sub">Wähle deinen Admin-Account</p>
+    <div class="login-btns" id="loginBtns"></div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <div class="wrap">
+
+    <!-- LOGGED AS -->
+    <div class="logged-row">
+      <span>Eingeloggt als: <strong id="loggedName">–</strong></span>
+      <button class="logout-btn" onclick="doLogout()">Abmelden</button>
+    </div>
+
+    <!-- LEVEL OVERVIEW -->
+    <div class="card">
+      <div class="ch"><div class="ch-ico">🏆</div><div><div class="ch-ttl">Level-Übersicht</div><div class="ch-sub">Wird automatisch berechnet</div></div></div>
+      <div class="lv-disp">
+        <div class="lv-num" id="aLvNum">LVL 1</div>
+        <div class="lv-name" id="aLvName">Beer-Schwimmer</div>
+      </div>
+      <div class="pb"><div class="pb-fill" id="aPbFill" style="width:0%"></div></div>
+      <div class="pb-row"><span id="aPbDone">0 erledigt</span><span id="aPbTot">0 total</span></div>
+    </div>
+
+    <!-- TASKS: LEVEL 1 -->
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-txt">🍺 Beer-Schwimmer</div><div class="sec-div-line"></div></div>
+    <div class="card" id="taskCard1">
+      <div id="taskList1"><div style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Lade...</div></div>
+    </div>
+
+    <!-- TASKS: LEVEL 2 -->
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-txt">🥂 Rosé-Prinz</div><div class="sec-div-line"></div></div>
+    <div class="card"><div id="taskList2"><div style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Lade...</div></div></div>
+
+    <!-- TASKS: LEVEL 3 -->
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-txt">🍊 Negroni-Daddy</div><div class="sec-div-line"></div></div>
+    <div class="card"><div id="taskList3"><div style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Lade...</div></div></div>
+
+    <!-- DRINK STATUS -->
+    <div class="card">
+      <div class="ch"><div class="ch-ico">🍺</div><div><div class="ch-ttl">Trinkstatus setzen</div><div class="ch-sub">Links = Nachschub · Mitte = Perfekt · Rechts = Pause</div></div></div>
+      <div class="drink-disp">
+        <div class="drink-val" id="aDrinkVal">50</div>
+        <div class="drink-unit">Trinkstatus</div>
+      </div>
+      <div class="drink-track">
+        <div class="drink-track-gradient"></div>
+        <div class="drink-needle" id="aDrinkNeedle" style="left:50%"></div>
+      </div>
+      <div class="drink-lbl-row"><span>🟢 Nachschub</span><span>✅ Perfekt</span><span>🔴 Pause</span></div>
+      <input type="range" id="drinkSlider" min="0" max="100" step="1" value="50" oninput="onDrinkSlide(this.value)">
+      <div class="range-labels"><span>0</span><span>50</span><span>100</span></div>
+      <div class="drink-status-preview">
+        <div class="dspdot" id="dspDot"></div>
+        <div class="dsptxt" id="dspTxt">–</div>
+      </div>
+      <button class="save-btn" onclick="saveDrink()">Trinkstatus speichern</button>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="card">
+      <div class="ch"><div class="ch-ico">📍</div><div><div class="ch-ttl">Standort aktualisieren</div><div class="ch-sub">Alle sehen sofort deinen Eintrag</div></div></div>
+      <div class="loc-control">
+        <div class="cur-loc" id="curLoc">Aktuell: <strong>–</strong></div>
+        <div class="input-row">
+          <input type="text" id="locInput" placeholder="Bar-Name oder Adresse...">
+          <button class="geo-btn" onclick="getGeo()" title="GPS ermitteln">📡</button>
+        </div>
+        <button class="save-btn" onclick="saveLoc()">Standort speichern</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const cfg = {
+  apiKey:"AIzaSyCe7rnFtDIEky4T3dJm01yVM24wz5by9zI",
+  authDomain:"polterabend-mrt.firebaseapp.com",
+  projectId:"polterabend-mrt",
+  storageBucket:"polterabend-mrt.firebasestorage.app",
+  messagingSenderId:"895557787854",
+  appId:"1:895557787854:web:0739bf5ab761c435b8f09f"
+};
+
+// ── ADMINS ────────────────────────────────────────────────────
+// 🔧 Namen hier anpassen!
+const ADMINS = [
+  { id:'a1', name:'Alex',  emoji:'🎩' },
+  { id:'a2', name:'Ben',   emoji:'🍺' },
+  { id:'a3', name:'Chris', emoji:'🎉' },
+];
+
+// ── AUFGABEN ──────────────────────────────────────────────────
+const TASKS = [
+  // Level 1 – Beer-Schwimmer (bis 13:00)
+  { id:'l1_t1', level:'l1', order:1,  name:'Outfit, Brille & Ball befestigen',
+    desc:'Zieh dein Outfit an, wähl deine Brille und befestige den Ball an dir! Es muss mindestens bis 19:00 Uhr halten!', points:100 },
+  { id:'l1_t2', level:'l1', order:2,  name:'Bull-Shit Bingo 🚫',
+    desc:'Du darfst bestimmte Wörter nicht verwenden. Tust du es doch, gibt es kein Bier und einen Spezial-Shot!', points:150 },
+  { id:'l1_t3', level:'l1', order:3,  name:'Traumfrau organisieren 💃',
+    desc:'Gib deiner Traumfrau ein Gesicht und organisiere zwei Kleidungsstücke für sie.', points:200 },
+  { id:'l1_t4', level:'l1', order:4,  name:'Bad-Boy Tattoo stechen lassen 🐉',
+    desc:'Zieh dein Bad-Boy Tattoo und lass es auf einer sichtbaren Stelle anbringen. Je sichtbarer, desto größer die Chance auf einen Bonus!', points:250 },
+  { id:'l1_t5', level:'l1', order:5,  name:'Zwischen-Snack für die Gruppe organisieren 🥨',
+    desc:'Organisiere einen Zwischen-Snack für die gesamte Gruppe.', points:100 },
+
+  // Level 2 – Rosé-Prinz (bis 19:00)
+  { id:'l2_t1', level:'l2', order:6,  name:'Outfit, Brille & Ball halten 💪',
+    desc:'Dein Outfit, deine Brille und der Ball müssen noch immer sitzen – prüfe und stelle sicher, dass alles noch bis 19:00 hält!', points:100 },
+  { id:'l2_t2', level:'l2', order:7,  name:'Bull-Shit Bingo weiterhin bestehen 🚫',
+    desc:'Immer noch keine verbotenen Wörter! Spezial-Shot droht bei Verstoß.', points:150 },
+  { id:'l2_t3', level:'l2', order:8,  name:'Traumfrau Outfit vervollständigen 💄',
+    desc:'Vervollständige das Outfit deiner Traumfrau – beide Kleidungsstücke müssen vorhanden sein.', points:200 },
+  { id:'l2_t4', level:'l2', order:9,  name:'Tattoo-Sichtbarkeit maximieren 🎨',
+    desc:'Je sichtbarer das Tattoo platziert wurde, desto größer die Bonus-Chance. Zeig es der Gruppe!', points:250 },
+  { id:'l2_t5', level:'l2', order:10, name:'Zweiter Gruppen-Snack 🍕',
+    desc:'Organisiere einen weiteren Snack für die Gruppe – Rosé-Niveau natürlich!', points:100 },
+
+  // Level 3 – Negroni-Daddy (bis 23:59)
+  { id:'l3_t1', level:'l3', order:11, name:'5 Secret-Karten an Fremde verteilen 🃏',
+    desc:'Verteile 5 Secret-Karten an fremde Personen – überzeuge sie mit Charme!', points:300 },
+  { id:'l3_t2', level:'l3', order:12, name:'Mini-Puzzle lösen 🧩',
+    desc:'Löse das mitgebrachte Mini-Puzzle vollständig.', points:200 },
+  { id:'l3_t3', level:'l3', order:13, name:'Ausdrucks-Tanz performen 🕺',
+    desc:'Präsentiere deiner Gruppe einen Ausdrucks-Tanz wie zu deinen besten Zeiten!', points:350 },
+  { id:'l3_t4', level:'l3', order:14, name:'Buch vervollständigen 📖',
+    desc:'Vervollständige dein Buch! Mindestens 10 Seiten müssen gefüllt sein – gerne auch von fremden Personen befüllt!', points:400 },
+];
+
+let db, curAdmin = null, allTasks = [];
+
+// ── LOGIN BUTTONS ─────────────────────────────────────────────
+const lbEl = document.getElementById('loginBtns');
+ADMINS.forEach(a => {
+  const btn = document.createElement('button');
+  btn.className = 'login-btn';
+  btn.innerHTML = `<span class="login-btn-ico">${a.emoji}</span><div><div class="login-btn-name">${a.name}</div><div class="login-btn-role">Admin</div></div>`;
+  btn.onclick = () => doLogin(a);
+  lbEl.appendChild(btn);
+});
+
+window.doLogin = async function(admin) {
+  curAdmin = admin;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  document.getElementById('loggedName').textContent = `${admin.emoji} ${admin.name}`;
+
+  db = getFirestore(initializeApp(cfg, 'admin_' + admin.id));
+  await initData();
+
+  // Listeners
+  onSnapshot(doc(db,'polter','state'), snap => {
+    const d = snap.data() || {};
+    const drinkV = d.drinkLevel ?? 50;
+    document.getElementById('drinkSlider').value = drinkV;
+    onDrinkSlide(drinkV);
+    if(d.location) document.getElementById('curLoc').innerHTML = `Aktuell: <strong>${d.location}</strong>`;
+  });
+
+  onSnapshot(collection(db,'polter','data','tasks'), snap => {
+    allTasks = [];
+    snap.forEach(d => allTasks.push({id:d.id,...d.data()}));
+    allTasks.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderAdminTasks();
+    updateLevelPanel();
+  });
+};
+
+window.doLogout = function() {
+  curAdmin = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminApp').style.display = 'none';
+};
+
+async function initData() {
+  const stateRef = doc(db,'polter','state');
+  const stSnap = await new Promise(res => { const u = onSnapshot(stateRef, s => { u(); res(s); }); });
+  if (!stSnap.exists()) {
+    for (const t of TASKS) {
+      await setDoc(doc(db,'polter','data','tasks',t.id), {...t, done:false, doneAt:null, doneBy:null});
+    }
+    await setDoc(stateRef, { drinkLevel:50, location:'', locationTime:null, totalCount:TASKS.length, completedCount:0 });
+    toast('🎉 Daten initialisiert!', 'ok');
+  }
+}
+
+function renderAdminTasks() {
+  ['l1','l2','l3'].forEach((lv, li) => {
+    const el = document.getElementById(`taskList${li+1}`);
+    const lvTasks = allTasks.filter(t => t.level === lv);
+    el.innerHTML = '';
+    lvTasks.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'task-item' + (t.done?' done':'');
+      let doneInfo = '';
+      if(t.done){
+        const ts = t.doneAt ? new Date(t.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : '';
+        const by = t.doneBy || '';
+        doneInfo = `<div class="task-done-t">✓ ${ts} Uhr · ${by}</div>`;
+      }
+      div.innerHTML = `
+        <button class="task-tog${t.done?' done':''}" onclick="toggleTask('${t.id}',${t.done})">${t.done?'✓':''}</button>
+        <div class="task-info">
+          <div class="task-name">${t.name}</div>
+          ${t.desc?`<div class="task-desc">${t.desc}</div>`:''}
+          <div class="task-pts">+${t.points||0} Punkte</div>
+          ${doneInfo}
+        </div>`;
+      el.appendChild(div);
+    });
+  });
+}
+
+function updateLevelPanel() {
+  const done = allTasks.filter(t=>t.done).length;
+  const total = allTasks.length;
+  const l1d = allTasks.filter(t=>t.level==='l1'&&t.done).length;
+  const l2d = allTasks.filter(t=>t.level==='l2'&&t.done).length;
+
+  let lvIdx = 0;
+  if(l1d>=3 && l2d>=3) lvIdx=2;
+  else if(l1d>=3) lvIdx=1;
+
+  const names = ['Beer-Schwimmer','Rosé-Prinz','Negroni-Daddy'];
+  document.getElementById('aLvNum').textContent = `LVL ${lvIdx+1}`;
+  document.getElementById('aLvName').textContent = names[lvIdx];
+  const pct = total>0?Math.round(done/total*100):0;
+  document.getElementById('aPbFill').style.width = pct+'%';
+  document.getElementById('aPbDone').textContent = `${done} erledigt`;
+  document.getElementById('aPbTot').textContent = `${total} total`;
+}
+
+window.toggleTask = async function(taskId, wasDone) {
+  if(!db){return;}
+  const newDone = !wasDone;
+  const now = new Date().toISOString();
+  await updateDoc(doc(db,'polter','data','tasks',taskId), {
+    done: newDone,
+    doneAt: newDone ? now : null,
+    doneBy: newDone ? curAdmin.name : null
+  });
+  const done = allTasks.filter(t=>t.done).length + (newDone?1:-1);
+  await updateDoc(doc(db,'polter','state'), { completedCount: Math.max(0,done) });
+  toast(newDone ? '✓ Aufgabe abgehakt!' : 'Aufgabe zurückgesetzt', 'ok');
+};
+
+// DRINK
+window.onDrinkSlide = function(v) {
+  const pct = Math.max(0,Math.min(100,Number(v)));
+  document.getElementById('aDrinkVal').textContent = pct;
+  document.getElementById('aDrinkNeedle').style.left = pct+'%';
+  let color, text;
+  if(pct<35){color='#4CAF7D';text='🟢 Tobi braucht Nachschub!';}
+  else if(pct<=65){color='#D4960A';text='✅ Alles im grünen Bereich';}
+  else{color='#E05A5A';text='🔴 Tobi sollte eine Pause machen!';}
+  document.getElementById('dspDot').style.background = color;
+  document.getElementById('dspTxt').textContent = text;
+  document.getElementById('dspTxt').style.color = color;
+};
+onDrinkSlide(50);
+
+window.saveDrink = async function() {
+  if(!db)return;
+  const v = Number(document.getElementById('drinkSlider').value);
+  await updateDoc(doc(db,'polter','state'), { drinkLevel: v });
+  toast('🍺 Trinkstatus gespeichert!', 'ok');
+};
+
+// LOCATION
+window.saveLoc = async function() {
+  if(!db)return;
+  const loc = document.getElementById('locInput').value.trim();
+  if(!loc){toast('Bitte Standort eingeben!','err');return;}
+  await updateDoc(doc(db,'polter','state'), { location: loc, locationTime: serverTimestamp() });
+  document.getElementById('curLoc').innerHTML = `Aktuell: <strong>${loc}</strong>`;
+  document.getElementById('locInput').value = '';
+  toast('📍 Standort gespeichert!', 'ok');
+};
+
+window.getGeo = function() {
+  if(!navigator.geolocation){toast('GPS nicht verfügbar','err');return;}
+  toast('📡 GPS wird ermittelt...','');
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const {latitude:lat,longitude:lng} = pos.coords;
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+      const d = await r.json();
+      document.getElementById('locInput').value = d.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      toast('📡 Position gefunden!','ok');
+    } catch {
+      document.getElementById('locInput').value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      toast('📡 Koordinaten eingefügt!','ok');
+    }
+  }, ()=>toast('GPS-Zugriff verweigert','err'));
+};
+
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast${type?' '+type:''} show`;
+  setTimeout(()=>el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
